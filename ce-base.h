@@ -12,8 +12,6 @@
 
 #define ce_var __auto_type
 
-#define ce_ref [static 1]
-
 #define ce_typeof(EXPR) __typeof__(EXPR)
 
 #define ce_inline static inline __attribute__((always_inline))
@@ -94,9 +92,11 @@ typedef struct {
   };
 } ce_res;
 
-ce_inline ce_res ce_err(ce_res_typ typ) { return (ce_res){typ}; }
+ce_inline ce_res ce_err(ce_res_typ typ) {
+  return (ce_res){typ, .pval = ce_nil};
+}
 
-ce_inline ce_res ce_ok() { return (ce_res){CE_OK}; }
+ce_inline ce_res ce_ok() { return (ce_res){CE_OK, .pval = ce_nil}; }
 
 ce_inline ce_res ce_okp(void *pval) { return (ce_res){CE_OK, .pval = pval}; }
 
