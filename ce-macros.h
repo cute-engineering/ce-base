@@ -44,25 +44,27 @@
 
 /* --- Map ------------------------------------------------------------------ */
 
-#define __MAP_END__(...)
-#define __MAP_OUT__
-#define __MAP_COMMA__ ,
+#define __CE_MAP_END__(...)
+#define __CE_MAP_OUT__
+#define __CE_MAP_COMMA__ ,
 
-#define __mapGetEnd2() 0, __MAP_END__
-#define __mapGetEnd1(...) __mapGetEnd2
-#define __mapGetEnd(...) __mapGetEnd1
+#define __ce_map_get_end2() 0, __CE_MAP_END__
+#define __ce_map_get_end1(...) __ce_map_get_end2
+#define __ce_map_get_end(...) __ce_map_get_end1
 
-#define __mapNext0(test, next, ...) next __MAP_OUT__
-#define __mapNext1(test, next) __mapNext0(test, next, 0)
-#define __mapNext(test, next) __mapNext1(__mapGetEnd test, next)
+#define __ce_map_next0(test, next, ...) next __CE_MAP_OUT__
+#define __ce_map_next1(test, next) __ce_map_next0(test, next, 0)
+#define __ce_map_next(test, next) __ce_map_next1(__ce_map_get_end test, next)
 
-#define __map0(f, x, peek, ...)                                                \
-  f(x) __mapNext(peek, __map1)(f, peek, __VA_ARGS__)
-#define __map1(f, x, peek, ...)                                                \
-  f(x) __mapNext(peek, __map0)(f, peek, __VA_ARGS__)
+#define __ce_map0(f, x, peek, ...)                                             \
+  f(x) __ce_map_next(peek, __ce_map1)(f, peek, __VA_ARGS__)
+#define __ce_map1(f, x, peek, ...)                                             \
+  f(x) __ce_map_next(peek, __ce_map0)(f, peek, __VA_ARGS__)
 
-#define __ce_map_listNext1(test, next) __mapNext0(test, __MAP_COMMA__ next, 0)
-#define __ce_map_listNext(test, next) __ce_map_listNext1(__mapGetEnd test, next)
+#define __ce_map_listNext1(test, next)                                         \
+  __ce_map_next0(test, __CE_MAP_COMMA__ next, 0)
+#define __ce_map_listNext(test, next)                                          \
+  __ce_map_listNext1(__ce_map_get_end test, next)
 
 #define __ce_map_list0(f, x, peek, ...)                                        \
   f(x) __ce_map_listNext(peek, __ce_map_list1)(f, peek, __VA_ARGS__)
@@ -71,7 +73,7 @@
 
 // Applies the function macro `f` to each of the remaining parameters.
 #define ce_map(f, ...)                                                         \
-  ce_eval(__map1(f, __VA_ARGS__, ()()(), ()()(), ()()(), 0))
+  ce_eval(__ce_map1(f, __VA_ARGS__, ()()(), ()()(), ()()(), 0))
 
 // Applies the function macro `f` to each of the remaining parameters and
 // inserts commas between the results.

@@ -1,0 +1,9 @@
+{
+    "$schema": "https://schemas.cute.engineering/stable/cutekit.manifest.component.v1",
+    "id": "ce-base",
+    "type": "lib",
+    "description": "Cute Engineering Base Library",
+    "props": {
+        "cpp-root-include": true
+    }
+}
