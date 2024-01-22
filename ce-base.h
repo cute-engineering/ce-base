@@ -58,14 +58,22 @@ typedef long double ce_f128;
 
 /* --- Buffers -------------------------------------------------------------- */
 
-typedef struct {
-  ce_usize len;
-  ce_u8 *ptr;
+typedef struct
+{
+    ce_usize len;
+    ce_u8 *ptr;
+} ce_buffer;
+
+typedef struct
+{
+    ce_usize len;
+    ce_u8 const *ptr;
 } ce_buf;
 
-typedef struct {
-  ce_usize len;
-  char const *ptr;
+typedef struct
+{
+    ce_usize len;
+    char const *ptr;
 } ce_str;
 
 #define ce_lit(STR) ((ce_str){sizeof(STR) - 1, STR})
@@ -74,26 +82,30 @@ typedef char const *ce_cstr;
 
 /* --- Error and Result ----------------------------------------------------- */
 
-typedef enum {
-  CE_OK,
+typedef enum
+{
+    CE_OK,
 #define ERR(name, ...) CE_##name,
 #include "ce-err.inc"
 #undef ERR
 } ce_res_typ;
 
-typedef struct {
-  ce_res_typ typ;
+typedef struct
+{
+    ce_res_typ typ;
 
-  union {
-    void *pval;
-    ce_u64 valu;
-    ce_i64 vali;
-    ce_f64 valf;
-  };
+    union
+    {
+        void *pval;
+        ce_u64 valu;
+        ce_i64 vali;
+        ce_f64 valf;
+    };
 } ce_res;
 
-ce_inline ce_res ce_err(ce_res_typ typ) {
-  return (ce_res){typ, .pval = ce_nil};
+ce_inline ce_res ce_err(ce_res_typ typ)
+{
+    return (ce_res){typ, .pval = ce_nil};
 }
 
 ce_inline ce_res ce_ok() { return (ce_res){CE_OK, .pval = ce_nil}; }
@@ -106,19 +118,21 @@ ce_inline ce_res ce_oki(ce_i64 ival) { return (ce_res){CE_OK, .vali = ival}; }
 
 ce_inline ce_res ce_okf(ce_f64 fval) { return (ce_res){CE_OK, .valf = fval}; }
 
-#define ce_try(expr)                                                           \
-  ({                                                                           \
-    ce_res _res = (expr);                                                      \
-    if (_res.type != CE_OK) {                                                  \
-      return _res;                                                             \
-    }                                                                          \
-    _res;                                                                      \
-  })
+#define ce_try(expr)            \
+    ({                          \
+        ce_res _res = (expr);   \
+        if (_res.type != CE_OK) \
+        {                       \
+            return _res;        \
+        }                       \
+        _res;                   \
+    })
 
 /* --- Ordering ------------------------------------------------------------- */
 
-typedef enum {
-  ce_less = -1,
-  ce_equal = 0,
-  ce_greater = 1,
+typedef enum
+{
+    ce_less = -1,
+    ce_equal = 0,
+    ce_greater = 1,
 } ce_ordr;

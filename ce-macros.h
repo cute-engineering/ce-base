@@ -23,14 +23,14 @@
                    _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, \
                    _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, _64, _65, \
                    _66, _67, _68, _69, _70, count, ...)                        \
-  count
+    count
 
-#define ce_count(__args...)                                                    \
-  __ce_count(0, ##__args, 70, 69, 68, 67, 66, 65, 64, 63, 62, 61, 60, 59, 58,  \
-             57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42,   \
-             41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26,   \
-             25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10,   \
-             9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+#define ce_count(__args...)                                                     \
+    __ce_count(0, ##__args, 70, 69, 68, 67, 66, 65, 64, 63, 62, 61, 60, 59, 58, \
+               57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42,  \
+               41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26,  \
+               25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10,  \
+               9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
 
 /* --- Eval ----------------------------------------------------------------- */
 
@@ -48,34 +48,50 @@
 #define __CE_MAP_OUT__
 #define __CE_MAP_COMMA__ ,
 
-#define __ce_map_get_end2() 0, __CE_MAP_END__
+#define __ce_map_get_end2()    0, __CE_MAP_END__
 #define __ce_map_get_end1(...) __ce_map_get_end2
-#define __ce_map_get_end(...) __ce_map_get_end1
+#define __ce_map_get_end(...)  __ce_map_get_end1
 
 #define __ce_map_next0(test, next, ...) next __CE_MAP_OUT__
-#define __ce_map_next1(test, next) __ce_map_next0(test, next, 0)
-#define __ce_map_next(test, next) __ce_map_next1(__ce_map_get_end test, next)
+#define __ce_map_next1(test, next)      __ce_map_next0(test, next, 0)
+#define __ce_map_next(test, next)       __ce_map_next1(__ce_map_get_end test, next)
 
-#define __ce_map0(f, x, peek, ...)                                             \
-  f(x) __ce_map_next(peek, __ce_map1)(f, peek, __VA_ARGS__)
-#define __ce_map1(f, x, peek, ...)                                             \
-  f(x) __ce_map_next(peek, __ce_map0)(f, peek, __VA_ARGS__)
+#define __ce_map0(f, x, peek, ...) \
+    f(x) __ce_map_next(peek, __ce_map1)(f, peek, __VA_ARGS__)
+#define __ce_map1(f, x, peek, ...) \
+    f(x) __ce_map_next(peek, __ce_map0)(f, peek, __VA_ARGS__)
 
-#define __ce_map_listNext1(test, next)                                         \
-  __ce_map_next0(test, __CE_MAP_COMMA__ next, 0)
-#define __ce_map_listNext(test, next)                                          \
-  __ce_map_listNext1(__ce_map_get_end test, next)
+#define __ce_map_listNext1(test, next) \
+    __ce_map_next0(test, __CE_MAP_COMMA__ next, 0)
+#define __ce_map_listNext(test, next) \
+    __ce_map_listNext1(__ce_map_get_end test, next)
 
-#define __ce_map_list0(f, x, peek, ...)                                        \
-  f(x) __ce_map_listNext(peek, __ce_map_list1)(f, peek, __VA_ARGS__)
-#define __ce_map_list1(f, x, peek, ...)                                        \
-  f(x) __ce_map_listNext(peek, __ce_map_list0)(f, peek, __VA_ARGS__)
+#define __ce_map_list0(f, x, peek, ...) \
+    f(x) __ce_map_listNext(peek, __ce_map_list1)(f, peek, __VA_ARGS__)
+#define __ce_map_list1(f, x, peek, ...) \
+    f(x) __ce_map_listNext(peek, __ce_map_list0)(f, peek, __VA_ARGS__)
 
 // Applies the function macro `f` to each of the remaining parameters.
-#define ce_map(f, ...)                                                         \
-  ce_eval(__ce_map1(f, __VA_ARGS__, ()()(), ()()(), ()()(), 0))
+#define ce_map(f, ...) \
+    ce_eval(__ce_map1(f, __VA_ARGS__, ()()(), ()()(), ()()(), 0))
 
 // Applies the function macro `f` to each of the remaining parameters and
 // inserts commas between the results.
-#define ce_map_list(f, ...)                                                    \
-  ce_eval(__ce_map_list1(f, __VA_ARGS__, ()()(), ()()(), ()()(), 0))
+#define ce_map_list(f, ...) \
+    ce_eval(__ce_map_list1(f, __VA_ARGS__, ()()(), ()()(), ()()(), 0))
+
+/* --- Begin Header --------------------------------------------------------- */
+
+#ifdef __cplusplus
+#    define CE_HEADER_BEGIN \
+        extern "C"          \
+        {
+#else
+#    define CE_HEADER_BEGIN
+#endif
+
+#ifdef __cplusplus
+#    define CE_HEADER_END }
+#else
+#    define CE_HEADER_END
+#endif
